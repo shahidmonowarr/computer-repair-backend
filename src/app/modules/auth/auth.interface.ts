@@ -7,6 +7,7 @@ export type IUserCreate = {
   email: string;
   password: string;
   role: Role;
+  phoneNumber: string;
   expertise: string;
   specializationId: string;
 };

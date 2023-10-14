@@ -30,7 +30,7 @@ const createNewUser = async (data: IUserCreate) => {
         lastName: data.lastName,
         profileImage: data.profileImage!,
         role: data.role!,
-        phoneNumber: '',
+        phoneNumber: data.phoneNumber!,
       },
       select: {
         profileId: true,
@@ -42,7 +42,6 @@ const createNewUser = async (data: IUserCreate) => {
       await transactionClient.technician.create({
         data: {
           expertise: data.expertise,
-          specializationId: data.specializationId,
           profileId: createdProfile.profileId,
         },
         select: {
