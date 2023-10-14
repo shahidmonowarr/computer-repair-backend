@@ -11,7 +11,231 @@ datasource db {
 }
 
 model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
+  userId    String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  profileId String?  @unique
+  profile   Profile? @relation(fields: [profileId], references: [profileId])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Profile {
+  profileId        String             @id @default(uuid())
+  firstName        String
+  lastName         String
+  profileImage     String?
+  role             Role
+  phoneNumber      String             @unique
+  address          String?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  user             User?
+  technician       Technician?
+  reviewAndRatings ReviewAndRatings[]
+  blogs            Blog[]
+  faqs             Faq[]
+  products         Product[]
+  bookings         Booking[]
+  feedBackForms    FeedBackForm[]
+
+  @@map("profiles")
+}
+
+model Technician {
+  technicianId     String         @id @default(uuid())
+  expertise        String
+  profileId        String         @unique
+  profile          Profile        @relation(fields: [profileId], references: [profileId])
+  specializationId String
+  specialization   Specialization @relation(fields: [specializationId], references: [specializationId])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("technicians")
+}
+
+model Service {
+  serviceId     String        @id @default(uuid())
+  serviceName   String        @unique
+  description   String
+  serviceImage  String
+  servicePrice  Int
+  location      String
+  serviceStatus serviceStatus @default(available)
+
+  categoryId       String
+  category         Category           @relation(fields: [categoryId], references: [categoryId])
+  reviewAndRatings ReviewAndRatings[]
+  products         Product[]
+  bookings         Booking[]
+  feedBackForms    FeedBackForm[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("services")
+}
+
+model Category {
+  categoryId   String    @id @default(uuid())
+  categoryName String    @unique
+  description  String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  services     Service[]
+
+  @@map("categories")
+}
+
+model ReviewAndRatings {
+  reviewId      String @id @default(uuid())
+  reviewComment String
+  reviewRating  String
+
+  profileId String
+  profile   Profile @relation(fields: [profileId], references: [profileId])
+  serviceId String
+  service   Service @relation(fields: [serviceId], references: [serviceId])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("reviews_and_ratings")
+}
+
+model Blog {
+  blogId          String  @id @default(uuid())
+  blogTitle       String
+  blogDescription String
+  blogImage       String
+  profileId       String
+  profile         Profile @relation(fields: [profileId], references: [profileId])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("blogs")
+}
+
+model Faq {
+  faqId          String  @id @default(uuid())
+  faqTitle       String
+  faqDescription String
+  profileId      String
+  profile        Profile @relation(fields: [profileId], references: [profileId])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("faqs")
+}
+
+model Product {
+  productId          String  @id @default(uuid())
+  productTitle       String
+  productDescription String
+  productImage       String
+  productPrice       Int
+  serviceId          String
+  service            Service @relation(fields: [serviceId], references: [serviceId])
+  profileId          String
+  profile            Profile @relation(fields: [profileId], references: [profileId])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("products")
+}
+
+model Specialization {
+  specializationId   String       @id @default(uuid())
+  specializationName String       @unique
+  description        String
+  technicians        Technician[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("specializations")
+}
+
+model Booking {
+  bookingId     String        @id @default(uuid())
+  bookingDate   DateTime
+  bookingStatus BookingStatus @default(pending)
+  issueStatus   IssueStatus   @default(ongoing)
+  profileId     String
+  profile       Profile       @relation(fields: [profileId], references: [profileId])
+  serviceId     String
+  service       Service       @relation(fields: [serviceId], references: [serviceId])
+  slotId        String
+  slot          TimeSlot      @relation(fields: [slotId], references: [slotId])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("bookings")
+}
+
+model TimeSlot {
+  slotId    String    @id @default(uuid())
+  startTime DateTime  @unique
+  endTime   DateTime  @unique
+  Booking   Booking[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("time_slots")
+}
+
+model FeedBackForm {
+  feedbackId      String  @id @default(uuid())
+  feedbackComment String
+  serviceId       String
+  service         Service @relation(fields: [serviceId], references: [serviceId])
+  profileId       String
+  profile         Profile @relation(fields: [profileId], references: [profileId])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("feedback_forms")
+}
+
+enum Role {
+  customer
+  admin
+  super_admin
+  technician
+}
+
+enum Gender {
+  male
+  female
+  other
+}
+
+enum BookingStatus {
+  pending
+  confirmed
+  cancelled
+}
+
+enum IssueStatus {
+  ongoing
+  fixed
+  not_fixed
+  cancelled
+}
+
+enum serviceStatus {
+  available
+  unavailable
+  upcoming
 }
