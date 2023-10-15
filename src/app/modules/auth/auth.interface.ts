@@ -11,3 +11,22 @@ export type IUserCreate = {
   expertise: string;
   specializationId: string;
 };
+
+export type IUserLogin = {
+  email: string;
+  password: string;
+};
+export type ILoginUserResponse = {
+  accessToken: string;
+  refreshToken: string;
+};
+
+export type ITokenData = {
+  userId: string;
+  role: Role;
+  profileId: string;
+};
+
+export type IRefreshTokenResponse = {
+  accessToken: string;
+};

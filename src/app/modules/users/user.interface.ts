@@ -15,3 +15,21 @@ export type IUsersResponse = {
   updatedAt: Date;
   profile: Profile | null;
 };
+
+export type IProfileUpdateRequest = {
+  firstName?: string;
+  lastName?: string;
+  profileImage?: string;
+  contactNumber?: string;
+  address?: string;
+  role?: Role;
+};
+
+export type IUserUpdateReqAndResponse = {
+  email?: string;
+  password?: string;
+};
+export type IUpdateUserResponse = {
+  message: string;
+  updatedInfo: { email?: string; password?: string };
+};

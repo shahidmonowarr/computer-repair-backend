@@ -7,7 +7,7 @@ import { IRequestUser } from './user.interface';
 import { UserService } from './user.service';
 
 const getAllUsers = catchAsync(async (req: Request, res: Response) => {
-  const options = pick(req.query, ['sortBy', 'limit', 'page']);
+  const options = pick(req.query, ['sortBy', 'limit', 'page', 'sortOrder']);
 
   const result = await UserService.getAllUsers(options);
 
@@ -42,8 +42,49 @@ const getMyProfile = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const updateProfileInfo = catchAsync(async (req: Request, res: Response) => {
+  const { profileId } = req.params;
+  const payload = req.body;
+  const result = await UserService.updateProfileInfo(profileId, payload);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Profile updated successfully',
+    data: result,
+  });
+});
+const updateMyProfileInfo = catchAsync(async (req: Request, res: Response) => {
+  const profileId = (req.user as IRequestUser).profileId;
+  const payload = req.body;
+  const result = await UserService.updateProfileInfo(profileId, payload);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Profile updated successfully',
+    data: result,
+  });
+});
+
+const updateUserInfo = catchAsync(async (req: Request, res: Response) => {
+  const { userId } = req.params;
+  const payload = req.body;
+  const result = await UserService.updateUserInfo(userId, payload);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'User updated successfully',
+    data: result,
+  });
+});
+
 export const UserController = {
   getAllUsers,
   getUserById,
   getMyProfile,
+  updateProfileInfo,
+  updateMyProfileInfo,
+  updateUserInfo,
 };
