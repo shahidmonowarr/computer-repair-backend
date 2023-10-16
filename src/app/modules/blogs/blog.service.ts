@@ -10,9 +10,16 @@ import {
   blogRelationalFields,
   blogRelationalFieldsMapper,
 } from './blog.constants';
-import { IBlogCreateRequest, IBlogFilterRequest } from './blog.interface';
+import {
+  IBlogCreateRequest,
+  IBlogFilterRequest,
+  ICreateNewBlogResponse,
+} from './blog.interface';
 
-const createBlog = async (profileId: string, blog: IBlogCreateRequest) => {
+const createBlog = async (
+  profileId: string,
+  blog: IBlogCreateRequest
+): Promise<ICreateNewBlogResponse> => {
   const result = await prisma.blog.create({
     data: {
       ...blog,
@@ -21,6 +28,11 @@ const createBlog = async (profileId: string, blog: IBlogCreateRequest) => {
           profileId,
         },
       },
+    },
+    select: {
+      blogId: true,
+      blogTitle: true,
+      createdAt: true,
     },
   });
   return result;
@@ -119,8 +131,44 @@ const getBlogById = async (blogId: string): Promise<Blog | null> => {
   return result;
 };
 
+const updateBlogById = async (
+  blogId: string,
+  blog: IBlogCreateRequest
+): Promise<Blog | null> => {
+  const result = await prisma.blog.update({
+    where: {
+      blogId,
+    },
+    data: {
+      ...blog,
+    },
+  });
+
+  if (!result) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Blog Not Found !!!');
+  }
+
+  return result;
+};
+
+const deleteBlogById = async (blogId: string): Promise<Blog | null> => {
+  const result = await prisma.blog.delete({
+    where: {
+      blogId,
+    },
+  });
+
+  if (!result) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Blog Not Found !!!');
+  }
+
+  return result;
+};
+
 export const BlogService = {
   createBlog,
   getAllBlogs,
   getBlogById,
+  updateBlogById,
+  deleteBlogById,
 };

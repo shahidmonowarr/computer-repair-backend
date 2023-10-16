@@ -47,8 +47,36 @@ const getBlogById = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const updateBlogById = catchAsync(async (req: Request, res: Response) => {
+  const { blogId } = req.params;
+
+  const result = await BlogService.updateBlogById(blogId, req.body);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Blog updated Successfully',
+    data: result,
+  });
+});
+
+const deleteBlogById = catchAsync(async (req: Request, res: Response) => {
+  const { blogId } = req.params;
+
+  const result = await BlogService.deleteBlogById(blogId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Blog deleted Successfully',
+    data: result,
+  });
+});
+
 export const BlogController = {
   createBlog,
   getAllBlogs,
   getBlogById,
+  updateBlogById,
+  deleteBlogById,
 };

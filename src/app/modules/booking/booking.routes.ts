@@ -1,11 +1,18 @@
 import { Role } from '@prisma/client';
 import express from 'express';
 import auth from '../../middlewares/auth';
+import validateRequest from '../../middlewares/validateRequest';
 import { bookingController } from './booking.controller';
+import { BookingValidation } from './booking.validation';
 
 const router = express.Router();
 
-router.post('/create', auth(Role.customer), bookingController.createNewBooking);
+router.post(
+  '/create',
+  auth(Role.customer),
+  validateRequest(BookingValidation.createBooking),
+  bookingController.createNewBooking
+);
 
 router.get(
   '/',
