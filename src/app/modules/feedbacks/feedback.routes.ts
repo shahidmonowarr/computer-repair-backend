@@ -24,3 +24,5 @@ router.delete(
   auth(Role.customer, Role.technician, Role.admin, Role.super_admin),
   FeedbackController.deleteFeedback
 );
+
+export const FeedbackRoutes = router;
