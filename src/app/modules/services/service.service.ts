@@ -11,17 +11,29 @@ import {
   serviceSearchableFields,
 } from './service.constants';
 import {
+  ICreateNewServiceResponse,
   IServiceCreateRequest,
   IServiceFilterRequest,
   IUpdateServiceRequest,
 } from './service.interface';
 
-const createNewService = async (service: IServiceCreateRequest) => {
-  const { serviceName, description, serviceImage, servicePrice } = service;
+const createNewService = async (
+  data: IServiceCreateRequest
+): Promise<ICreateNewServiceResponse> => {
+  const serviceData = {
+    serviceName: data.serviceName,
+    description: data.description,
+    serviceImage: data.serviceImage,
+    servicePrice: data.servicePrice,
+    serviceStatus: data.serviceStatus,
+  };
 
   const serviceExists = await prisma.service.findFirst({
     where: {
-      serviceName,
+      serviceName: serviceData.serviceName,
+    },
+    select: {
+      serviceName: true,
     },
   });
 
@@ -30,12 +42,7 @@ const createNewService = async (service: IServiceCreateRequest) => {
   }
 
   const result = await prisma.service.create({
-    data: {
-      serviceName,
-      description,
-      serviceImage,
-      servicePrice,
-    },
+    data: serviceData,
   });
 
   return result;

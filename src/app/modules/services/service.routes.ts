@@ -1,16 +1,13 @@
 import { Role } from '@prisma/client';
 import express from 'express';
 import auth from '../../middlewares/auth';
-import validateRequest from '../../middlewares/validateRequest';
 import { RepairServiceController } from './service.controller';
-import { RepairServiceValidation } from './service.validations';
 
 const router = express.Router();
 
 router.post(
   '/create',
   auth(Role.admin, Role.super_admin),
-  validateRequest(RepairServiceValidation.createService),
   RepairServiceController.createNewService
 );
 router.get('/:serviceId', RepairServiceController.getSingleService);

@@ -7,9 +7,7 @@ export type IUserCreate = {
   email: string;
   password: string;
   role: Role;
-  phoneNumber: string;
   expertise: string;
-  specializationId: string;
 };
 
 export type IUserLogin = {
@@ -24,6 +22,7 @@ export type ILoginUserResponse = {
 export type ITokenData = {
   userId: string;
   role: Role;
+  email: string;
   profileId: string;
 };
 

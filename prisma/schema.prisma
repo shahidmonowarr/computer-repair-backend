@@ -28,8 +28,8 @@ model Profile {
   firstName        String
   lastName         String
   profileImage     String?
-  role             Role
-  phoneNumber      String             @unique
+  role             Role               @default(customer)
+  phoneNumber      String?            @unique
   address          String?
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt

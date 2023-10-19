@@ -18,18 +18,24 @@ router.get(
   UserController.getUserById
 );
 router.get('/', auth(Role.super_admin, Role.admin), UserController.getAllUsers);
-router.patch(
-  '/update-user/:userId',
-  auth(Role.super_admin, Role.admin),
-  validateRequest(UserValidation.updateUser),
-  UserController.updateUserInfo
-);
+
+// Update user profile info
 router.patch(
   '/update-profile/:profileId',
   auth(Role.super_admin, Role.admin),
   validateRequest(UserValidation.updateUser),
   UserController.updateProfileInfo
 );
+
+// Update my user info
+router.patch(
+  '/update-my-email-password',
+  auth(Role.super_admin, Role.admin, Role.customer),
+  validateRequest(UserValidation.updateUser),
+  UserController.updateUserInfo
+);
+
+// Update my profile info
 router.patch(
   '/update-my-profile',
   auth(Role.super_admin, Role.admin, Role.technician, Role.customer),

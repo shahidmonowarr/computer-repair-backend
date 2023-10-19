@@ -38,7 +38,6 @@ const createNewUser = async (data: IUserCreate) => {
         lastName: data.lastName,
         profileImage: data.profileImage!,
         role: data.role!,
-        phoneNumber: data.phoneNumber!,
       },
       select: {
         profileId: true,
@@ -98,6 +97,7 @@ const userLogin = async (
     },
     select: {
       userId: true,
+      email: true,
       password: true,
       profile: {
         select: {
@@ -121,6 +121,7 @@ const userLogin = async (
   const tokenData: ITokenData = {
     userId: isUserExist.userId,
     role: isUserExist?.profile?.role as Role,
+    email: isUserExist.email,
     profileId: isUserExist.profile?.profileId as string,
   };
 
@@ -163,6 +164,7 @@ const refreshToken = async (token: string): Promise<IRefreshTokenResponse> => {
     },
     select: {
       userId: true,
+      email: true,
       password: true,
       profile: {
         select: {
@@ -179,12 +181,14 @@ const refreshToken = async (token: string): Promise<IRefreshTokenResponse> => {
   type TokenData = {
     userId: string;
     role: Role;
+    email: string;
     profileId: string;
   };
 
   const tokenData: TokenData = {
     userId: isUserExist.userId,
     role: isUserExist?.profile?.role as Role,
+    email: isUserExist.email,
     profileId: isUserExist?.profile?.profileId as string,
   };
 

@@ -7,6 +7,7 @@ import { IPaginationOptions } from '../../../interfaces/pagination';
 import prisma from '../../../shared/prisma';
 import {
   IProfileUpdateRequest,
+  IUpdateUserResponse,
   IUserUpdateReqAndResponse,
   IUsersResponse,
 } from './user.interface';
@@ -56,57 +57,64 @@ const getUserById = async (userId: string) => {
   return result;
 };
 
-const updateUserInfo = async (
+// Update my user Profile info
+const updateMyUserInfo = async (
   userId: string,
   payload: IUserUpdateReqAndResponse
-): Promise<IUserUpdateReqAndResponse> => {
-  const { email, password } = payload;
-
-  const existingUser = await prisma.user.findUnique({
-    where: {
-      userId,
-    },
-  });
+): Promise<IUpdateUserResponse> => {
+  const existingUser = await prisma.user.findUnique({ where: { userId } });
 
   if (!existingUser) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'User not found!');
+    throw new ApiError(httpStatus.NOT_FOUND, 'You are  not a valid user!');
   }
+  const { oldPassword, newPassword, email } = payload;
 
-  const updateData: { email?: string; password?: string } = {};
+  const updatedData: { email?: string; password?: string } = {};
 
-  if (email !== undefined) {
-    updateData.email = email;
-  }
+  if (oldPassword && newPassword) {
+    const isOldPasswordCorrect = await bcrypt.compare(
+      oldPassword,
+      existingUser.password
+    );
 
-  if (password !== undefined) {
+    if (!isOldPasswordCorrect) {
+      throw new ApiError(httpStatus.UNAUTHORIZED, 'Old password is incorrect');
+    }
+
     const hashPassword = await bcrypt.hash(
-      password,
+      newPassword,
       Number(config.bcrypt_salt_rounds)
     );
-    updateData.password = hashPassword;
+    updatedData.password = hashPassword;
   }
 
-  if (Object.keys(updateData).length === 0) {
-    throw new ApiError(
-      httpStatus.BAD_REQUEST,
-      'At least one field is required for update'
-    );
+  if (email) {
+    updatedData.email = email;
+  }
+
+  if (Object.keys(updatedData).length === 0) {
+    return {
+      message: 'No changes to update',
+      updatedInfo: {},
+    };
   }
 
   const result = await prisma.user.update({
-    where: {
-      userId,
-    },
-    data: updateData,
+    where: { userId },
+    data: updatedData,
   });
 
   if (!result) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'User update failed');
   }
 
-  return updateData;
+  return {
+    message: 'User updated successfully',
+    updatedInfo: updatedData,
+  };
 };
 
+// Update user profile info
 const updateProfileInfo = async (
   profileId: string,
   payload: IProfileUpdateRequest
@@ -114,7 +122,8 @@ const updateProfileInfo = async (
   message: string;
   updatedInfo: IProfileUpdateRequest;
 }> => {
-  const { firstName, lastName, profileImage, role } = payload;
+  const { firstName, lastName, profileImage, role, phoneNumber, address } =
+    payload;
 
   if ('profileId' in payload) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Profile Id cannot be updated');
@@ -147,6 +156,14 @@ const updateProfileInfo = async (
 
   if (role !== undefined) {
     updateData.role = role;
+  }
+
+  if (phoneNumber !== undefined) {
+    updateData.phoneNumber = phoneNumber;
+  }
+
+  if (address !== undefined) {
+    updateData.address = address;
   }
 
   if (Object.keys(updateData).length === 0) {
@@ -195,6 +212,7 @@ const getMyProfile = async (userId: string): Promise<IUsersResponse | null> => {
   return result;
 };
 
+// Update my Profile info
 const updateMyProfileInfo = async (
   profileId: string,
   payload: IProfileUpdateRequest
@@ -202,7 +220,8 @@ const updateMyProfileInfo = async (
   message: string;
   updatedInfo: IProfileUpdateRequest;
 }> => {
-  const { firstName, lastName, profileImage, role } = payload;
+  const { firstName, lastName, profileImage, role, phoneNumber, address } =
+    payload;
 
   if ('profileId' in payload) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Profile Id cannot be updated');
@@ -237,6 +256,14 @@ const updateMyProfileInfo = async (
     updateData.role = role;
   }
 
+  if (phoneNumber !== undefined) {
+    updateData.phoneNumber = phoneNumber;
+  }
+
+  if (address !== undefined) {
+    updateData.address = address;
+  }
+
   if (Object.keys(updateData).length === 0) {
     throw new ApiError(
       httpStatus.BAD_REQUEST,
@@ -267,6 +294,6 @@ export const UserService = {
   getUserById,
   updateProfileInfo,
   getMyProfile,
-  updateUserInfo,
+  updateMyUserInfo,
   updateMyProfileInfo,
 };

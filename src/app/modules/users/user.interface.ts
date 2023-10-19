@@ -20,14 +20,15 @@ export type IProfileUpdateRequest = {
   firstName?: string;
   lastName?: string;
   profileImage?: string;
-  contactNumber?: string;
+  phoneNumber?: string;
   address?: string;
   role?: Role;
 };
 
 export type IUserUpdateReqAndResponse = {
   email?: string;
-  password?: string;
+  oldPassword?: string;
+  newPassword?: string;
 };
 export type IUpdateUserResponse = {
   message: string;

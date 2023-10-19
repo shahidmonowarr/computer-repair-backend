@@ -42,6 +42,7 @@ const getMyProfile = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// Update user profile info
 const updateProfileInfo = catchAsync(async (req: Request, res: Response) => {
   const { profileId } = req.params;
   const payload = req.body;
@@ -54,6 +55,8 @@ const updateProfileInfo = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+
+// Update my profile info
 const updateMyProfileInfo = catchAsync(async (req: Request, res: Response) => {
   const profileId = (req.user as IRequestUser).profileId;
   const payload = req.body;
@@ -62,15 +65,16 @@ const updateMyProfileInfo = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Profile updated successfully',
+    message: 'My Profile updated successfully',
     data: result,
   });
 });
 
+// Update my user info
 const updateUserInfo = catchAsync(async (req: Request, res: Response) => {
-  const { userId } = req.params;
+  const userId = (req.user as IRequestUser).userId;
   const payload = req.body;
-  const result = await UserService.updateUserInfo(userId, payload);
+  const result = await UserService.updateMyUserInfo(userId, payload);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
