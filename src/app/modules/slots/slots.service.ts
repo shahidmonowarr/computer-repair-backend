@@ -14,23 +14,20 @@ const createSlot = async (
   //
   const existingSlot = await prisma.timeSlot.findFirst({
     where: {
-      startTime: payload.startTime,
-      endTime: payload.endTime,
+      slotTime: payload.slotTime,
     },
   });
 
   if (existingSlot) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Slot already booked');
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Slot already exists');
   }
   const createdNewSlot = await prisma.timeSlot.create({
     data: {
-      startTime: payload.startTime,
-      endTime: payload.endTime,
+      slotTime: payload.slotTime,
     },
     select: {
       slotId: true,
-      startTime: true,
-      endTime: true,
+      slotTime: true,
       createdAt: true,
     },
   });
@@ -74,8 +71,7 @@ const updateSlot = async (
       slotId,
     },
     data: {
-      startTime: payload.startTime,
-      endTime: payload.endTime,
+      slotTime: payload.slotTime,
     },
   });
 

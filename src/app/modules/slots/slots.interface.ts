@@ -1,16 +1,15 @@
 export type ICreateSlotRequest = {
-  startTime: Date;
-  endTime: Date;
+  slotTime: string;
 };
 
 export type IUpdateSlotRequest = {
-  startTime?: Date;
-  endTime?: Date;
+  slotId: string;
+  slotTime: string;
+  serviceId: string;
 };
 
 export type ICreateSlotResponse = {
   slotId: string;
-  startTime: Date;
-  endTime: Date;
+  slotTime: string;
   createdAt: Date;
 };

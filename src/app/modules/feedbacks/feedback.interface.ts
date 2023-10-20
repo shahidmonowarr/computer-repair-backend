@@ -1,6 +1,6 @@
 export type IFeedbackCreateRequest = {
-  feedbackComment: string;
-  serviceId: string;
+  feedbackSubject: string;
+  feedbackDescription: string;
 };
 export type IFeedbackUpdateRequest = {
   feedbackComment?: string;
@@ -8,13 +8,13 @@ export type IFeedbackUpdateRequest = {
 };
 
 export type IFeedbackCreateResponse = {
+  feedbackSubject: string;
+  feedbackDescription: string;
   createdAt: Date;
-  feedbackComment: string;
 };
 
 export type IFeedBackFilterRequest = {
   searchTerm?: string | undefined;
-  feedbackComment?: string | undefined;
-  service?: string | undefined;
+  feedbackSubject?: string | undefined;
   profile?: string | undefined;
 };

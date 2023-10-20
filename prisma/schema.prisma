@@ -39,7 +39,6 @@ model Profile {
   blogs            Blog[]
   faqs             Faq[]
   bookings         Booking[]
-  feedBackForms    FeedBackForm[]
 
   @@map("profiles")
 }
@@ -66,7 +65,6 @@ model Service {
 
   reviewAndRatings ReviewAndRatings[]
   bookings         Booking[]
-  feedBackForms    FeedBackForm[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -136,10 +134,9 @@ model Booking {
 }
 
 model TimeSlot {
-  slotId    String    @id @default(uuid())
-  startTime DateTime  @unique
-  endTime   DateTime  @unique
-  Booking   Booking[]
+  slotId   String    @id @default(uuid())
+  slotTime String
+  Booking  Booking[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -148,12 +145,9 @@ model TimeSlot {
 }
 
 model FeedBackForm {
-  feedbackId      String  @id @default(uuid())
-  feedbackComment String
-  serviceId       String
-  service         Service @relation(fields: [serviceId], references: [serviceId])
-  profileId       String
-  profile         Profile @relation(fields: [profileId], references: [profileId])
+  feedbackId          String @id @default(uuid())
+  feedbackSubject     String
+  feedbackDescription String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

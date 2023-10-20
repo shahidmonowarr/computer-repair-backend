@@ -6,19 +6,23 @@ import { bookingController } from './booking.controller';
 import { BookingValidation } from './booking.validation';
 
 const router = express.Router();
+router.get(
+  '/',
+
+  auth(Role.super_admin, Role.admin, Role.customer),
+  bookingController.getAllBookings
+);
+router.get(
+  '/my-booking',
+  auth(Role.super_admin, Role.admin, Role.customer),
+  bookingController.getMyBooking
+);
 
 router.post(
   '/create',
   auth(Role.customer),
   validateRequest(BookingValidation.createBooking),
   bookingController.createNewBooking
-);
-
-router.get(
-  '/',
-
-  auth(Role.super_admin, Role.admin, Role.customer),
-  bookingController.getAllBookings
 );
 
 router.patch(

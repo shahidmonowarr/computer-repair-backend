@@ -18,29 +18,18 @@ import {
 } from './feedback.interface';
 
 const createNewFeedback = async (
-  profileId: string,
   payload: IFeedbackCreateRequest
 ): Promise<IFeedbackCreateResponse> => {
-  //
-  const isExisting = await prisma.service.findUnique({
-    where: {
-      serviceId: payload.serviceId,
-    },
-  });
-
-  if (!isExisting) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Service not found');
-  }
-
   const createdNewFeedback = await prisma.feedBackForm.create({
     data: {
-      feedbackComment: payload.feedbackComment,
-      serviceId: payload.serviceId,
-      profileId,
+      feedbackSubject: payload.feedbackSubject,
+      feedbackDescription: payload.feedbackDescription,
     },
     select: {
+      feedbackId: true,
+      feedbackSubject: true,
+      feedbackDescription: true,
       createdAt: true,
-      feedbackComment: true,
     },
   });
   if (!createdNewFeedback) {
@@ -101,23 +90,6 @@ const getAllFeedbacks = async (
     where: whereConditions,
     skip,
     take: limit,
-    include: {
-      profile: {
-        select: {
-          firstName: true,
-          lastName: true,
-          profileImage: true,
-          profileId: true,
-        },
-      },
-      service: {
-        select: {
-          serviceId: true,
-          serviceName: true,
-          serviceImage: true,
-        },
-      },
-    },
     orderBy:
       options.sortBy && options.sortOrder
         ? { [options.sortBy]: options.sortOrder }

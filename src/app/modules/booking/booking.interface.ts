@@ -7,6 +7,7 @@ export type IBookingUpdateRequest = {
   bookingDate?: Date;
   serviceId?: string;
   slotId?: string;
+  bookingStatus?: string;
 };
 
 export type IBookingCreateResponse = {
@@ -19,4 +20,8 @@ export type IBookingFilterRequest = {
   serviceId?: string | undefined;
   bookingDate?: string | undefined;
   slotId?: string | undefined;
+  firstName?: string | undefined;
+  lastName?: string | undefined;
+  serviceName?: string | undefined;
+  bookingStatus?: string | undefined;
 };

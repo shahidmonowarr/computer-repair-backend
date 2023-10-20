@@ -34,6 +34,22 @@ const getAllBookings = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getMyBooking = catchAsync(async (req: Request, res: Response) => {
+  const profileId = (req.user as IRequestUser).profileId;
+  const filters = pick(req.query, bookingFilterableFields);
+  const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
+
+  const result = await bookingService.getMyBooking(profileId, filters, options);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'fetched successfully',
+    meta: result.meta,
+    data: result.data,
+  });
+});
+
 const updateBooking = catchAsync(async (req: Request, res: Response) => {
   const { bookingId } = req.params;
   const result = await bookingService.updateBooking(bookingId, req.body);
@@ -63,4 +79,5 @@ export const bookingController = {
   getAllBookings,
   updateBooking,
   deleteBooking,
+  getMyBooking,
 };
