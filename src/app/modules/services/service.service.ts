@@ -95,7 +95,6 @@ const getAllServices = async (
   const result = await prisma.service.findMany({
     include: {
       reviewAndRatings: true,
-      feedBackForms: true,
       bookings: true,
     },
     where: whereConditions,
@@ -132,7 +131,6 @@ const getSingleService = async (serviceId: string): Promise<Service | null> => {
     },
     include: {
       reviewAndRatings: true,
-      feedBackForms: true,
       bookings: true,
     },
   });
