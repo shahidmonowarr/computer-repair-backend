@@ -136,7 +136,7 @@ model Booking {
 model TimeSlot {
   slotId   String    @id @default(uuid())
   slotTime String
-  Booking  Booking[]
+  bookings Booking[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

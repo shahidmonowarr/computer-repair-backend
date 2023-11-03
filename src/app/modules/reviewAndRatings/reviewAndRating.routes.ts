@@ -15,6 +15,12 @@ router.post(
 );
 
 router.get(
+  '/my-reviews',
+  auth(Role.customer),
+  reviewAndRatingController.getMyReviewsAndRatings
+);
+
+router.get(
   '/',
   auth(Role.super_admin, Role.admin, Role.customer),
   reviewAndRatingController.getAllReviewAndRatings

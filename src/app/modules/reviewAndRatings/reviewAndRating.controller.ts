@@ -35,6 +35,22 @@ const getAllReviewAndRatings = catchAsync(
   }
 );
 
+const getMyReviewsAndRatings = catchAsync(
+  async (req: Request, res: Response) => {
+    const profileId = (req.user as IRequestUser).profileId;
+    const result = await reviewAndRatingService.getMyReviewsAndRatings(
+      profileId
+    );
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'fetched successfully',
+      data: result,
+    });
+  }
+);
+
 const updateReview = catchAsync(async (req: Request, res: Response) => {
   const { reviewId } = req.params;
   const result = await reviewAndRatingService.updateRatingAndReview(
@@ -67,4 +83,5 @@ export const reviewAndRatingController = {
   updateReview,
   singleReviewDelete,
   getAllReviewAndRatings,
+  getMyReviewsAndRatings,
 };

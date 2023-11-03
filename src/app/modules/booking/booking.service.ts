@@ -38,7 +38,7 @@ const createNewBooking = async (
   // Check if the slot exists
   const existingSlot = await prisma.timeSlot.findUnique({
     where: {
-      slotId,
+      slotId: payload.slotId,
     },
   });
 
@@ -48,9 +48,9 @@ const createNewBooking = async (
 
   const takenSlot = await prisma.booking.findFirst({
     where: {
-      slotId: payload.slotId,
-      bookingDate: payload.bookingDate,
-      serviceId: payload.serviceId,
+      slotId,
+      bookingDate,
+      serviceId,
       OR: [{ bookingStatus: 'pending' }, { bookingStatus: 'confirmed' }],
     },
   });
@@ -88,7 +88,7 @@ const getAllBookings = async (
 ): Promise<IGenericResponse<Booking[]>> => {
   const { limit, page, skip } = paginationHelpers.calculatePagination(options);
 
-  const { searchTerm, ...filterData } = filters;
+  const { searchTerm, firstName, bookingStatus, ...filterData } = filters;
 
   const andConditions = [];
 
@@ -100,6 +100,25 @@ const getAllBookings = async (
           mode: 'insensitive',
         },
       })),
+    });
+  }
+
+  if (firstName) {
+    andConditions.push({
+      profile: {
+        firstName: {
+          contains: firstName,
+          mode: 'insensitive',
+        },
+      },
+    });
+  }
+
+  if (bookingStatus) {
+    andConditions.push({
+      bookingStatus: {
+        equals: bookingStatus,
+      },
     });
   }
 
@@ -123,10 +142,30 @@ const getAllBookings = async (
     });
   }
 
+  // @ts-ignore
   const whereConditions: Prisma.BookingWhereInput =
     andConditions.length > 0 ? { AND: andConditions } : {};
 
   const result = await prisma.booking.findMany({
+    include: {
+      service: {
+        select: {
+          serviceName: true,
+        },
+      },
+      slot: {
+        select: {
+          slotTime: true,
+        },
+      },
+      profile: {
+        select: {
+          firstName: true,
+          lastName: true,
+          phoneNumber: true,
+        },
+      },
+    },
     where: whereConditions,
     skip,
     take: limit,
@@ -151,6 +190,7 @@ const getAllBookings = async (
     data: result,
   };
 };
+
 const getMyBooking = async (
   profileId: string,
   filters: IBookingFilterRequest,
@@ -193,7 +233,7 @@ const getMyBooking = async (
   }
 
   andConditions.push({
-    profileId: (filters as any).profileId,
+    profileId,
   });
 
   if (Object.keys(filterData).length > 0) {
@@ -300,7 +340,21 @@ const updateBooking = async (
     serviceId: payload?.serviceId,
     appointmentDate: payload?.bookingDate,
     slotId: payload?.slotId,
+    bookingStatus: payload?.bookingStatus,
   };
+
+  const isSlotTaken = await prisma.booking.findFirst({
+    where: {
+      slotId: payload?.slotId,
+      bookingDate: payload?.bookingDate,
+      serviceId: payload?.serviceId,
+      OR: [{ bookingStatus: 'pending' }, { bookingStatus: 'confirmed' }],
+    },
+  });
+
+  if (isSlotTaken) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Slot already booked');
+  }
 
   const result = await prisma.booking.update({
     where: {

@@ -1,3 +1,5 @@
+import { BookingStatus } from '@prisma/client';
+
 export type IBookingCreateRequest = {
   bookingDate: Date;
   serviceId: string;
@@ -7,7 +9,7 @@ export type IBookingUpdateRequest = {
   bookingDate?: Date;
   serviceId?: string;
   slotId?: string;
-  bookingStatus?: string;
+  bookingStatus?: BookingStatus;
 };
 
 export type IBookingCreateResponse = {
@@ -23,5 +25,5 @@ export type IBookingFilterRequest = {
   firstName?: string | undefined;
   lastName?: string | undefined;
   serviceName?: string | undefined;
-  bookingStatus?: string | undefined;
+  bookingStatus?: BookingStatus | undefined;
 };

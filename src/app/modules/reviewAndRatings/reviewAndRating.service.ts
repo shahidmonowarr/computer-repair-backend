@@ -54,6 +54,32 @@ const getAllReviewAndRatings = async (): Promise<ReviewAndRatings[]> => {
   return result;
 };
 
+const getMyReviewsAndRatings = async (
+  profileId: string
+): Promise<ReviewAndRatings[]> => {
+  const result = await prisma.reviewAndRatings.findMany({
+    where: {
+      profile: {
+        profileId,
+      },
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+    include: {
+      service: {
+        select: {
+          serviceName: true,
+        },
+      },
+    },
+  });
+  if (!result) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Review Not Found');
+  }
+  return result;
+};
+
 const updateRatingAndReview = async (
   reviewId: string,
   payload: Partial<IUpdateReviewAndRatingRequest>
@@ -120,4 +146,5 @@ export const reviewAndRatingService = {
   updateRatingAndReview,
   DeleteRatingAndReview,
   getAllReviewAndRatings,
+  getMyReviewsAndRatings,
 };

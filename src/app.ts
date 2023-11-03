@@ -10,7 +10,8 @@ const app: Application = express();
 
 app.use(
   cors({
-    origin: ['https://computer-repair-frontend.vercel.app'],
+    // origin: ['http://localhost:3000'],
+    origin: true,
     credentials: true,
   })
 );
