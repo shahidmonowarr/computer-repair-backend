@@ -51,6 +51,29 @@ const getAllReviewAndRatings = () => __awaiter(void 0, void 0, void 0, function*
     }
     return result;
 });
+const getMyReviewsAndRatings = (profileId) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield prisma_1.default.reviewAndRatings.findMany({
+        where: {
+            profile: {
+                profileId,
+            },
+        },
+        orderBy: {
+            createdAt: 'desc',
+        },
+        include: {
+            service: {
+                select: {
+                    serviceName: true,
+                },
+            },
+        },
+    });
+    if (!result) {
+        throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'Review Not Found');
+    }
+    return result;
+});
 const updateRatingAndReview = (reviewId, payload) => __awaiter(void 0, void 0, void 0, function* () {
     const isExistReview = yield prisma_1.default.reviewAndRatings.findUnique({
         where: {
@@ -102,4 +125,5 @@ exports.reviewAndRatingService = {
     updateRatingAndReview,
     DeleteRatingAndReview,
     getAllReviewAndRatings,
+    getMyReviewsAndRatings,
 };

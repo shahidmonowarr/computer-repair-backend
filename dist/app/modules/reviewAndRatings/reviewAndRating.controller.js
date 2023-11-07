@@ -36,6 +36,16 @@ const getAllReviewAndRatings = (0, catchAsync_1.default)((req, res) => __awaiter
         data: result,
     });
 }));
+const getMyReviewsAndRatings = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const profileId = req.user.profileId;
+    const result = yield reviewAndRating_service_1.reviewAndRatingService.getMyReviewsAndRatings(profileId);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: 'fetched successfully',
+        data: result,
+    });
+}));
 const updateReview = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { reviewId } = req.params;
     const result = yield reviewAndRating_service_1.reviewAndRatingService.updateRatingAndReview(reviewId, req.body);
@@ -61,4 +71,5 @@ exports.reviewAndRatingController = {
     updateReview,
     singleReviewDelete,
     getAllReviewAndRatings,
+    getMyReviewsAndRatings,
 };

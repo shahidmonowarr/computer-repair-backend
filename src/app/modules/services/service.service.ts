@@ -30,7 +30,7 @@ const createNewService = async (
 
   const serviceExists = await prisma.service.findFirst({
     where: {
-      serviceName: serviceData.serviceName,
+      serviceName: serviceData?.serviceName,
     },
     select: {
       serviceName: true,
@@ -44,6 +44,10 @@ const createNewService = async (
   const result = await prisma.service.create({
     data: serviceData,
   });
+
+  if (!result) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Service creation failed');
+  }
 
   return result;
 };

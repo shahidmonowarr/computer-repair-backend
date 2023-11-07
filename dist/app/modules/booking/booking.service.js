@@ -43,7 +43,7 @@ const createNewBooking = (profileId, payload) => __awaiter(void 0, void 0, void 
     // Check if the slot exists
     const existingSlot = yield prisma_1.default.timeSlot.findUnique({
         where: {
-            slotId,
+            slotId: payload.slotId,
         },
     });
     if (!existingSlot) {
@@ -51,9 +51,9 @@ const createNewBooking = (profileId, payload) => __awaiter(void 0, void 0, void 
     }
     const takenSlot = yield prisma_1.default.booking.findFirst({
         where: {
-            slotId: payload.slotId,
-            bookingDate: payload.bookingDate,
-            serviceId: payload.serviceId,
+            slotId,
+            bookingDate,
+            serviceId,
             OR: [{ bookingStatus: 'pending' }, { bookingStatus: 'confirmed' }],
         },
     });
@@ -79,7 +79,7 @@ const createNewBooking = (profileId, payload) => __awaiter(void 0, void 0, void 
 });
 const getAllBookings = (filters, options) => __awaiter(void 0, void 0, void 0, function* () {
     const { limit, page, skip } = paginationHelper_1.paginationHelpers.calculatePagination(options);
-    const { searchTerm } = filters, filterData = __rest(filters, ["searchTerm"]);
+    const { searchTerm, firstName, bookingStatus } = filters, filterData = __rest(filters, ["searchTerm", "firstName", "bookingStatus"]);
     const andConditions = [];
     if (searchTerm) {
         andConditions.push({
@@ -89,6 +89,23 @@ const getAllBookings = (filters, options) => __awaiter(void 0, void 0, void 0, f
                     mode: 'insensitive',
                 },
             })),
+        });
+    }
+    if (firstName) {
+        andConditions.push({
+            profile: {
+                firstName: {
+                    contains: firstName,
+                    mode: 'insensitive',
+                },
+            },
+        });
+    }
+    if (bookingStatus) {
+        andConditions.push({
+            bookingStatus: {
+                equals: bookingStatus,
+            },
         });
     }
     if (Object.keys(filterData).length > 0) {
@@ -111,8 +128,28 @@ const getAllBookings = (filters, options) => __awaiter(void 0, void 0, void 0, f
             }),
         });
     }
+    // @ts-ignore
     const whereConditions = andConditions.length > 0 ? { AND: andConditions } : {};
     const result = yield prisma_1.default.booking.findMany({
+        include: {
+            service: {
+                select: {
+                    serviceName: true,
+                },
+            },
+            slot: {
+                select: {
+                    slotTime: true,
+                },
+            },
+            profile: {
+                select: {
+                    firstName: true,
+                    lastName: true,
+                    phoneNumber: true,
+                },
+            },
+        },
         where: whereConditions,
         skip,
         take: limit,
@@ -168,7 +205,7 @@ const getMyBooking = (profileId, filters, options) => __awaiter(void 0, void 0, 
         });
     }
     andConditions.push({
-        profileId: filters.profileId,
+        profileId,
     });
     if (Object.keys(filterData).length > 0) {
         andConditions.push({
@@ -259,7 +296,19 @@ const updateBooking = (bookingId, payload) => __awaiter(void 0, void 0, void 0, 
         serviceId: payload === null || payload === void 0 ? void 0 : payload.serviceId,
         appointmentDate: payload === null || payload === void 0 ? void 0 : payload.bookingDate,
         slotId: payload === null || payload === void 0 ? void 0 : payload.slotId,
+        bookingStatus: payload === null || payload === void 0 ? void 0 : payload.bookingStatus,
     };
+    const isSlotTaken = yield prisma_1.default.booking.findFirst({
+        where: {
+            slotId: payload === null || payload === void 0 ? void 0 : payload.slotId,
+            bookingDate: payload === null || payload === void 0 ? void 0 : payload.bookingDate,
+            serviceId: payload === null || payload === void 0 ? void 0 : payload.serviceId,
+            OR: [{ bookingStatus: 'pending' }, { bookingStatus: 'confirmed' }],
+        },
+    });
+    if (isSlotTaken) {
+        throw new ApiError_1.default(http_status_1.default.BAD_REQUEST, 'Slot already booked');
+    }
     const result = yield prisma_1.default.booking.update({
         where: {
             bookingId,
