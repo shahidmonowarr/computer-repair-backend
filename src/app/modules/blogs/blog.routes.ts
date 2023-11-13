@@ -9,7 +9,7 @@ const router = express.Router();
 
 router.post(
   '/create',
-  auth(Role.customer),
+  auth(Role.admin, Role.super_admin),
   validateRequest(BlogValidation.createBlog),
   BlogController.createBlog
 );

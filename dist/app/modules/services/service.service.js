@@ -39,7 +39,7 @@ const createNewService = (data) => __awaiter(void 0, void 0, void 0, function* (
     };
     const serviceExists = yield prisma_1.default.service.findFirst({
         where: {
-            serviceName: serviceData.serviceName,
+            serviceName: serviceData === null || serviceData === void 0 ? void 0 : serviceData.serviceName,
         },
         select: {
             serviceName: true,
@@ -51,6 +51,9 @@ const createNewService = (data) => __awaiter(void 0, void 0, void 0, function* (
     const result = yield prisma_1.default.service.create({
         data: serviceData,
     });
+    if (!result) {
+        throw new ApiError_1.default(http_status_1.default.BAD_REQUEST, 'Service creation failed');
+    }
     return result;
 });
 const getAllServices = (filters, options) => __awaiter(void 0, void 0, void 0, function* () {

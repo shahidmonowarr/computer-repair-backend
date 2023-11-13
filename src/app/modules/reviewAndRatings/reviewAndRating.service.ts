@@ -46,30 +46,59 @@ const createNewRatingAndReview = async (
   return createdNewRatingAndReview;
 };
 
-const getAllReviewAndRatings = async (): Promise<ReviewAndRatings[]> => {
-  const result = await prisma.reviewAndRatings.findMany({});
+const getAllReviewAndRatings = async () => {
+  const result = await prisma.reviewAndRatings.findMany({
+    select: {
+      reviewComment: true,
+      reviewRating: true,
+      createdAt: true,
+      profile: {
+        select: {
+          firstName: true,
+          lastName: true,
+          profileId: true,
+          profileImage: true,
+        },
+      },
+      service: {
+        select: {
+          serviceName: true,
+          serviceId: true,
+        },
+      },
+    },
+  });
   if (!result) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Review Not Found');
   }
   return result;
 };
 
-const getMyReviewsAndRatings = async (
-  profileId: string
-): Promise<ReviewAndRatings[]> => {
+const getMyReviewsAndRatings = async (profileId: string) => {
   const result = await prisma.reviewAndRatings.findMany({
     where: {
-      profile: {
-        profileId,
-      },
+      profileId,
     },
     orderBy: {
       createdAt: 'desc',
     },
-    include: {
+    select: {
+      reviewComment: true,
+      reviewRating: true,
+      createdAt: true,
+      reviewId: true,
+      profile: {
+        select: {
+          firstName: true,
+          lastName: true,
+          profileId: true,
+          profileImage: true,
+        },
+      },
       service: {
         select: {
           serviceName: true,
+          serviceId: true,
         },
       },
     },
