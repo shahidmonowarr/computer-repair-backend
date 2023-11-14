@@ -16,6 +16,7 @@ import {
   IBookingCreateResponse,
   IBookingFilterRequest,
   IBookingUpdateRequest,
+  IMyBookingUpdateRequest,
 } from './booking.interface';
 
 const createNewBooking = async (
@@ -368,6 +369,40 @@ const updateBooking = async (
   return result;
 };
 
+const updateMyBookingStatus = async (
+  profileId: string,
+  bookingId: string,
+  payload: Partial<IMyBookingUpdateRequest>
+): Promise<Booking | null> => {
+  const isExist = await prisma.booking.findUnique({
+    where: {
+      bookingId,
+    },
+  });
+
+  if (!isExist) {
+    throw new ApiError(
+      httpStatus.NOT_FOUND,
+      'Appointment Booking Not Found !!!'
+    );
+  }
+
+  const updateData = {
+    bookingStatus: payload?.bookingStatus,
+  };
+
+  const result = await prisma.booking.update({
+    where: {
+      bookingId,
+    },
+    data: updateData,
+  });
+  if (!result) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Updating Failed !!!');
+  }
+  return result;
+};
+
 const deleteBooking = async (bookingId: string): Promise<Booking | null> => {
   const result = await prisma.$transaction(async transactionClient => {
     const isExist = await transactionClient.booking.findUnique({
@@ -399,6 +434,7 @@ export const bookingService = {
   getAllBookings,
   getSingleBooking,
   updateBooking,
+  updateMyBookingStatus,
   deleteBooking,
   getMyBooking,
 };

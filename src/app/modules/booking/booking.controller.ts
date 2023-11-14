@@ -62,6 +62,25 @@ const updateBooking = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const updateMyBookingStatus = catchAsync(
+  async (req: Request, res: Response) => {
+    const profileId = (req.user as IRequestUser).profileId;
+    const { bookingId } = req.params;
+    const result = await bookingService.updateMyBookingStatus(
+      profileId,
+      bookingId,
+      req.body
+    );
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Updated successfully',
+      data: result,
+    });
+  }
+);
+
 const deleteBooking = catchAsync(async (req: Request, res: Response) => {
   const { bookingId } = req.params;
   const result = await bookingService.deleteBooking(bookingId);
@@ -78,6 +97,7 @@ export const bookingController = {
   createNewBooking,
   getAllBookings,
   updateBooking,
+  updateMyBookingStatus,
   deleteBooking,
   getMyBooking,
 };

@@ -31,6 +31,12 @@ router.patch(
   bookingController.updateBooking
 );
 
+router.patch(
+  '/my-booking/:bookingId',
+  auth(Role.super_admin, Role.admin, Role.customer),
+  bookingController.updateMyBookingStatus
+);
+
 router.delete(
   '/:bookingId',
   auth(Role.super_admin, Role.admin, Role.customer),

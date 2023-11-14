@@ -12,6 +12,10 @@ export type IBookingUpdateRequest = {
   bookingStatus?: BookingStatus;
 };
 
+export type IMyBookingUpdateRequest = {
+  bookingStatus?: BookingStatus;
+};
+
 export type IBookingCreateResponse = {
   bookingDate: Date;
   createdAt: Date;
