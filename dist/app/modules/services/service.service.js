@@ -126,7 +126,14 @@ const getSingleService = (serviceId) => __awaiter(void 0, void 0, void 0, functi
             serviceId,
         },
         include: {
-            reviewAndRatings: true,
+            reviewAndRatings: {
+                include: {
+                    profile: true,
+                },
+                orderBy: {
+                    createdAt: 'desc',
+                },
+            },
             bookings: true,
         },
     });
