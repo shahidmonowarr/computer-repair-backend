@@ -15,5 +15,6 @@ router.get('/', (0, auth_1.default)(client_1.Role.super_admin, client_1.Role.adm
 router.get('/my-booking', (0, auth_1.default)(client_1.Role.super_admin, client_1.Role.admin, client_1.Role.customer), booking_controller_1.bookingController.getMyBooking);
 router.post('/create', (0, auth_1.default)(client_1.Role.customer), (0, validateRequest_1.default)(booking_validation_1.BookingValidation.createBooking), booking_controller_1.bookingController.createNewBooking);
 router.patch('/:bookingId', (0, auth_1.default)(client_1.Role.super_admin, client_1.Role.admin, client_1.Role.customer), booking_controller_1.bookingController.updateBooking);
+router.patch('/my-booking/:bookingId', (0, auth_1.default)(client_1.Role.super_admin, client_1.Role.admin, client_1.Role.customer), booking_controller_1.bookingController.updateMyBookingStatus);
 router.delete('/:bookingId', (0, auth_1.default)(client_1.Role.super_admin, client_1.Role.admin, client_1.Role.customer), booking_controller_1.bookingController.deleteBooking);
 exports.bookingRoutes = router;

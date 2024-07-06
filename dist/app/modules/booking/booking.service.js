@@ -320,6 +320,29 @@ const updateBooking = (bookingId, payload) => __awaiter(void 0, void 0, void 0, 
     }
     return result;
 });
+const updateMyBookingStatus = (profileId, bookingId, payload) => __awaiter(void 0, void 0, void 0, function* () {
+    const isExist = yield prisma_1.default.booking.findUnique({
+        where: {
+            bookingId,
+        },
+    });
+    if (!isExist) {
+        throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'Appointment Booking Not Found !!!');
+    }
+    const updateData = {
+        bookingStatus: payload === null || payload === void 0 ? void 0 : payload.bookingStatus,
+    };
+    const result = yield prisma_1.default.booking.update({
+        where: {
+            bookingId,
+        },
+        data: updateData,
+    });
+    if (!result) {
+        throw new ApiError_1.default(http_status_1.default.BAD_REQUEST, 'Updating Failed !!!');
+    }
+    return result;
+});
 const deleteBooking = (bookingId) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield prisma_1.default.$transaction((transactionClient) => __awaiter(void 0, void 0, void 0, function* () {
         const isExist = yield transactionClient.booking.findUnique({
@@ -347,6 +370,7 @@ exports.bookingService = {
     getAllBookings,
     getSingleBooking,
     updateBooking,
+    updateMyBookingStatus,
     deleteBooking,
     getMyBooking,
 };

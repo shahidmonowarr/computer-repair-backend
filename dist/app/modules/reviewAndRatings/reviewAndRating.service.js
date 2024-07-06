@@ -45,7 +45,27 @@ const createNewRatingAndReview = (profileId, payload) => __awaiter(void 0, void 
     return createdNewRatingAndReview;
 });
 const getAllReviewAndRatings = () => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield prisma_1.default.reviewAndRatings.findMany({});
+    const result = yield prisma_1.default.reviewAndRatings.findMany({
+        select: {
+            reviewComment: true,
+            reviewRating: true,
+            createdAt: true,
+            profile: {
+                select: {
+                    firstName: true,
+                    lastName: true,
+                    profileId: true,
+                    profileImage: true,
+                },
+            },
+            service: {
+                select: {
+                    serviceName: true,
+                    serviceId: true,
+                },
+            },
+        },
+    });
     if (!result) {
         throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'Review Not Found');
     }
@@ -54,17 +74,28 @@ const getAllReviewAndRatings = () => __awaiter(void 0, void 0, void 0, function*
 const getMyReviewsAndRatings = (profileId) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield prisma_1.default.reviewAndRatings.findMany({
         where: {
-            profile: {
-                profileId,
-            },
+            profileId,
         },
         orderBy: {
             createdAt: 'desc',
         },
-        include: {
+        select: {
+            reviewComment: true,
+            reviewRating: true,
+            createdAt: true,
+            reviewId: true,
+            profile: {
+                select: {
+                    firstName: true,
+                    lastName: true,
+                    profileId: true,
+                    profileImage: true,
+                },
+            },
             service: {
                 select: {
                     serviceName: true,
+                    serviceId: true,
                 },
             },
         },
